@@ -1,6 +1,4 @@
 from controller import Supervisor
-
-
 robot = Supervisor()
 TIME_STEP = int(robot.getBasicTimeStep())
 
@@ -19,8 +17,8 @@ right_motor.setVelocity(0.0)
 
 # Front Distance Sensors Only
 
-ps0 = robot.getDevice("ps0")  
-ps7 = robot.getDevice("ps7")  
+ps0 = robot.getDevice("ps0")  # front right
+ps7 = robot.getDevice("ps7")  # front left
 
 ps0.enable(TIME_STEP)
 ps7.enable(TIME_STEP)
@@ -45,22 +43,30 @@ self_node = robot.getSelf()
 FORWARD_SPEED = 3.0
 TURN_SPEED = 3.0
 
+# Normal obstacle detection while moving forward
 FORWARD_OBSTACLE_THRESHOLD = 300.0
 
+# More sensitive check after turning left 90 degrees
 CHECK_FRONT_OBSTACLE_THRESHOLD = 100.0
 
+# Turn durations
 TURN_90_DURATION = 0.736
 TURN_180_DURATION = 1.472
 
+# Wait after turning so sensor values become stable
 CHECK_WAIT_DURATION = 0.50
 
+# Camera red colour detection
 RED_THRESHOLD = 100
 RED_RATIO_THRESHOLD = 0.006
 
+# Target delivery zone position
+# Change these if your red ground delivery zone has a different translation.
 TARGET_X = 0.40
 TARGET_Y = 0.00
 TARGET_RADIUS = 0.15
 
+# Safety / fail-safe settings
 MAX_RUNTIME = 60.0
 MAX_AVOID_ATTEMPTS = 8
 
@@ -231,8 +237,10 @@ while robot.step(TIME_STEP) != -1:
             avoid_attempts += 1
             state = TURN_LEFT_90
             turn_start_time = current_time
-        else:
+        elif target_detected:
             state = NAVIGATE
+        else:
+            state = SEARCH
 
     elif state == TURN_LEFT_90:
         if current_time - turn_start_time >= TURN_90_DURATION:
@@ -288,9 +296,9 @@ while robot.step(TIME_STEP) != -1:
 
     elif state == SAFE_STOP:
         stop_robot()
-
+        
     # Console Output
-
+    
     print(
         f"Time: {current_time:.2f} | "
         f"State: {state} | "
