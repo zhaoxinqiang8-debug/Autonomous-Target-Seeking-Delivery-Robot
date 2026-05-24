@@ -1,0 +1,68 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/solids/protos/SolidBox.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation -0.5459364846887454 0.5432138624421956 0.6378652321112405 2.010532008053423
+  position 0.0022660410955480104 -0.40540193674648667 2.111529703473231
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+}
+E-puck {
+  hidden position_0_0 1244.2518187789992
+  hidden position_0_1 1251.4192996603208
+  hidden rotation_1 0 1 0 0.1811279574410997
+  hidden rotation_2 0 -1 0 5.217761775596493
+  translation -0.4 -0.3 0
+  controller "delivery_robot_controller"
+  supervisor TRUE
+}
+SolidBox {
+  translation 0.4 0 0.001
+  size 0.2 0.2 0.001
+  appearance PBRAppearance {
+    baseColor 1 0 0
+    baseColorMap ImageTexture {
+      url [
+        "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/default/worlds/textures/tagged_wall.jpg"
+      ]
+    }
+    roughness 0.5
+    metalness 0
+  }
+}
+SolidBox {
+  translation -0.18 -0.2 0
+  name "box(1)"
+  size 0.4 0.05 0.3
+}
+SolidBox {
+  translation 0.23 0.42 0
+  name "box(5)"
+  size 0.52 0.05 0.3
+}
+SolidBox {
+  translation 0.15 -0.08 0
+  name "box(3)"
+  size 0.05 0.7 0.3
+}
+SolidBox {
+  translation -0.005 0.1 0
+  name "box(4)"
+  size 0.05 0.65 0.3
+}
+SolidBox {
+  translation -0.12 -0.4 0
+  name "box(2)"
+  size 0.5 0.05 0.3
+}
