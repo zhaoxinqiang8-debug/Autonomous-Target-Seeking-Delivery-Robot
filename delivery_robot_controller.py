@@ -1,31 +1,12 @@
 from controller import Supervisor
 
-# ==========================================================
-# Delivery Robot Controller
-# Simple FSM with Safety / Fail-safe Mechanism
-#
-# Logic:
-# IDLE -> SEARCH
-# SEARCH / NAVIGATE: move forward
-# If obstacle detected: turn left 90 degrees
-# Then check front:
-#   if clear -> continue moving forward
-#   if blocked -> turn left 180 degrees
-# Camera detects red delivery zone
-# Robot stops when it reaches the target delivery zone
-# Safety:
-#   if runtime is too long -> SAFE_STOP
-#   if too many avoidance attempts -> SAFE_STOP
-# ==========================================================
 
 robot = Supervisor()
 TIME_STEP = int(robot.getBasicTimeStep())
 
 print("Delivery robot FSM controller started")
 
-# ==========================================================
 # Motors
-# ==========================================================
 
 left_motor = robot.getDevice("left wheel motor")
 right_motor = robot.getDevice("right wheel motor")
@@ -36,19 +17,15 @@ right_motor.setPosition(float("inf"))
 left_motor.setVelocity(0.0)
 right_motor.setVelocity(0.0)
 
-# ==========================================================
 # Front Distance Sensors Only
-# ==========================================================
 
-ps0 = robot.getDevice("ps0")  # front right
-ps7 = robot.getDevice("ps7")  # front left
+ps0 = robot.getDevice("ps0")  
+ps7 = robot.getDevice("ps7")  
 
 ps0.enable(TIME_STEP)
 ps7.enable(TIME_STEP)
 
-# ==========================================================
 # Camera
-# ==========================================================
 
 camera = None
 
@@ -59,49 +36,35 @@ try:
 except:
     print("Camera not found")
 
-# ==========================================================
 # Supervisor position
-# ==========================================================
 
 self_node = robot.getSelf()
 
-# ==========================================================
 # Parameters
-# ==========================================================
 
 FORWARD_SPEED = 3.0
 TURN_SPEED = 3.0
 
-# Normal obstacle detection while moving forward
 FORWARD_OBSTACLE_THRESHOLD = 300.0
 
-# More sensitive check after turning left 90 degrees
 CHECK_FRONT_OBSTACLE_THRESHOLD = 100.0
 
-# Turn durations
 TURN_90_DURATION = 0.736
 TURN_180_DURATION = 1.472
 
-# Wait after turning so sensor values become stable
 CHECK_WAIT_DURATION = 0.50
 
-# Camera red colour detection
 RED_THRESHOLD = 100
 RED_RATIO_THRESHOLD = 0.006
 
-# Target delivery zone position
-# Change these if your red ground delivery zone has a different translation.
 TARGET_X = 0.40
 TARGET_Y = 0.00
 TARGET_RADIUS = 0.15
 
-# Safety / fail-safe settings
 MAX_RUNTIME = 60.0
 MAX_AVOID_ATTEMPTS = 8
 
-# ==========================================================
 # FSM States
-# ==========================================================
 
 IDLE = "IDLE"
 SEARCH = "SEARCH"
@@ -121,9 +84,7 @@ avoid_attempts = 0
 
 safe_stop_reason = ""
 
-# ==========================================================
 # Motor Functions
-# ==========================================================
 
 def move_forward():
     left_motor.setVelocity(FORWARD_SPEED)
@@ -139,9 +100,7 @@ def stop_robot():
     left_motor.setVelocity(0.0)
     right_motor.setVelocity(0.0)
 
-# ==========================================================
 # Sensor Functions
-# ==========================================================
 
 def get_front_sensor_value():
     front_right = ps0.getValue()
@@ -157,9 +116,7 @@ def obstacle_detected_while_moving(front):
 def obstacle_detected_after_turn(front):
     return front > CHECK_FRONT_OBSTACLE_THRESHOLD
 
-# ==========================================================
 # Camera Red Target Detection
-# ==========================================================
 
 def detect_red_target():
     if camera is None:
@@ -197,9 +154,7 @@ def detect_red_target():
 
     return False, red_ratio
 
-# ==========================================================
 # Target Zone Check
-# ==========================================================
 
 def get_robot_position():
     position = self_node.getPosition()
@@ -220,9 +175,7 @@ def is_on_target_zone():
 
     return on_target, distance_to_target, robot_x, robot_y
 
-# ==========================================================
 # Safety Check
-# ==========================================================
 
 def safety_check(current_time):
     global safe_stop_reason
@@ -237,9 +190,7 @@ def safety_check(current_time):
 
     return False
 
-# ==========================================================
 # Main Loop
-# ==========================================================
 
 while robot.step(TIME_STEP) != -1:
     current_time = robot.getTime()
@@ -248,9 +199,7 @@ while robot.step(TIME_STEP) != -1:
     target_detected, red_ratio = detect_red_target()
     on_target, distance_to_target, robot_x, robot_y = is_on_target_zone()
 
-    # ======================================================
     # FSM Decision Logic
-    # ======================================================
 
     if state == IDLE:
         state = SEARCH
@@ -314,9 +263,7 @@ while robot.step(TIME_STEP) != -1:
         else:
             state = TURN_180
 
-    # ======================================================
     # FSM Action Logic
-    # ======================================================
 
     if state == SEARCH:
         move_forward()
@@ -342,9 +289,7 @@ while robot.step(TIME_STEP) != -1:
     elif state == SAFE_STOP:
         stop_robot()
 
-    # ======================================================
     # Console Output
-    # ======================================================
 
     print(
         f"Time: {current_time:.2f} | "
